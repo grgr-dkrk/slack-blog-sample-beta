@@ -1,0 +1,10 @@
+@charset 'utf-8';
+
+$mainColor: #4D3A4B;
+$md: 768;
+
+@mixin media_query($bp) {
+  @media screen and (max-width: $bp + px) {
+    @content;
+  }
+}
