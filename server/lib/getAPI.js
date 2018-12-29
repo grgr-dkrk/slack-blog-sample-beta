@@ -20,8 +20,12 @@ const IS_IMAGE_FILE = fileType =>
 async function getChannelsData() {
   const res = await web.conversations.list()
   const data = res.channels
-    .filter(channel => /blog-/.test(channel.name))
-    .map(channel => setChannelData(channel))
+    .reduce((list, channel) => {
+      if (/blog-/.test(channel.name)) {
+        list.push(setChannelData(channel))
+      }
+      return list
+    }, [])
   return await Promise.all(data)
 }
 
@@ -63,10 +67,12 @@ function setChannelInfo(channel) {
  * @return { Object } EntryData
  */
 function setChannelEntries(messages, channelId, channelName) {
-  const list = messages.filter(message => {
-    return message.type === 'message' && !message.subtype
-  })
-  return list.map(item => setEntryData(item, channelId, channelName))
+  return messages.reduce((list, message) => {
+    if (message.type === 'message' && !message.subtype) {
+      list.push(setEntryData(message, channelId, channelName))
+    }
+    return list
+  }, [])
 }
 
 /**
@@ -118,10 +124,12 @@ function setEntryData(entry, channelId, channelName) {
  */
 async function getUsers() {
   const res = await web.users.list()
-  const list = res.members.filter(user => {
-    return user.name !== 'slackbot' && !user.is_bot && !user.is_app_user
-  })
-  return list.map(user => setUserData(user))
+  return res.members.reduce((list, user) => {
+    if (user.name !== 'slackbot' && !user.is_bot && !user.is_app_user) {
+      list.push(setUserData(user))
+    }
+    return list
+  }, [])
 }
 
 /**
@@ -147,20 +155,22 @@ async function fetchAllImages() {
   const users = await web.users.list()
 
   const channelList = channels.channels
-    .filter(
-      channel => /blog-/.test(channel.name) || /source-/.test(channel.name)
-    )
-    .map(channel => channel.id)
+    .reduce((list, channel) => {
+      if (/blog-/.test(channel.name) || /source-/.test(channel.name)) {
+        list.push(channel.id)
+      }
+      return list
+    }, [])
 
-  // fetch all avatar images
   const data_users = users.members
-    .filter(
-      user => user.name !== 'slackbot' && !user.is_bot && !user.is_app_user
-    )
-    .map(user => {
-      const url = user.profile.image_192
-      saveImageData(url, url.match(/[^/]+$/i)[0])
-    })
+    .reduce((list, user) => {
+      if (user.name !== 'slackbot' && !user.is_bot && !user.is_app_user) {
+        list.push(user)
+        const url = user.profile.image_192
+        saveImageData(url, url.match(/[^/]+$/i)[0])
+      }
+      return list
+    }, [])
 
   // fetch all images from entries
   const data_entryFiles = files.files
