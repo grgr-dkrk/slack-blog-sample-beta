@@ -1,16 +1,18 @@
 const { WebClient } = require('@slack/client')
 const Jimp = require('jimp')
 const fs = require('fs')
-const { promisify } = require('util');
-const imagemin = require('imagemin');
-const imageminJpegtran = require('imagemin-jpegtran');
-const imageminPngquant = require('imagemin-pngquant');
+const { promisify } = require('util')
+const imagemin = require('imagemin')
+const imageminJpegtran = require('imagemin-jpegtran')
+const imageminPngquant = require('imagemin-pngquant')
+require('dotenv').config()
 
-const SLACK_ACCESS_TOKEN = process.env.SLACK_ACCESS_TOKEN
-const web = new WebClient(SLACK_ACCESS_TOKEN);
+const SLACK_ACCESS_TOKEN = process.env[process.env.API_TOKEN_VARIABLE]
+const web = new WebClient(SLACK_ACCESS_TOKEN)
 
 const PATH_IMAGE = `static/uploads/`
-const IS_IMAGE_FILE = fileType => ~['jpg', 'png', 'bmp', 'tiff'].indexOf(fileType)
+const IS_IMAGE_FILE = fileType =>
+  ~['jpg', 'png', 'bmp', 'tiff'].indexOf(fileType)
 
 /**
  * get list of all channels data
@@ -32,7 +34,11 @@ async function setChannelData(channel) {
     channel: channel.id
   })
   const channelData = setChannelInfo(channel)
-  channelData.entries = setChannelEntries(entries.messages, channel.id, channel.name)
+  channelData.entries = setChannelEntries(
+    entries.messages,
+    channel.id,
+    channel.name
+  )
   return channelData
 }
 
@@ -57,37 +63,53 @@ function setChannelInfo(channel) {
  * @return { Object } EntryData
  */
 function setChannelEntries(messages, channelId, channelName) {
-  const re_title = /^# (.+)\n/
   const list = messages.filter(message => {
     return message.type === 'message' && !message.subtype
   })
-  return list.map(item => {
-    let file = ''
-    if (item.hasOwnProperty('files') && IS_IMAGE_FILE(item.files[0].filetype)) {
-      file = {
-        id: item.files[0].id,
-        type: item.files[0].filetype,
-        title: item.files[0].title,
-        url: item.files[0].url_private_download
-      }
+  return list.map(item => setEntryData(item, channelId, channelName))
+}
+
+/**
+ * set an entry data
+ * @param { Object } entry
+ * @return { Object } EntryData
+ */
+function setEntryData(entry, channelId, channelName) {
+  const re_title = /^# (.+)\n/
+  let file = ''
+  if (entry.hasOwnProperty('files') && IS_IMAGE_FILE(entry.files[0].filetype)) {
+    file = {
+      id: entry.files[0].id,
+      type: entry.files[0].filetype,
+      title: entry.files[0].title,
+      url: entry.files[0].url_private_download
     }
-    return {
-      author: item.user,
-      channel: channelId,
-      channelName: channelName,
-      content: item.text.replace(re_title, '').replace(/<http.*slack.com\/files\/.+\/.+\/(.*jpg|.*png|.*bmp|.*tiff|.*gif)>/g, '![](/uploads/$1)'),
-      edited: item.hasOwnProperty('edited') ? item.edited.ts : '',
-      file: file,
-      pinned: item.hasOwnProperty('pinned_to') ? true : false,
-      reactions: item.hasOwnProperty('reactions') ? item.reactions.map(reaction => reaction.name) : '',
-      starred: item.hasOwnProperty('is_starred') && item.is_starred ? true : false,
-      title: (item.text.match(re_title) && item.text.match(re_title)[1]) ||
-        (file && file.title) ||
-        '無題',
-      ts: item.ts,
-      upload: item.hasOwnProperty('upload') && item.upload ? true : false
-    }
-  })
+  }
+  return {
+    author: entry.user,
+    channel: channelId,
+    channelName: channelName,
+    content: entry.text
+      .replace(re_title, '')
+      .replace(
+        /<http.*slack.com\/files\/.+\/.+\/(.*jpg|.*png|.*bmp|.*tiff|.*gif)>/g,
+        '![](/uploads/$1)'
+      ),
+    edited: entry.hasOwnProperty('edited') ? entry.edited.ts : '',
+    file: file,
+    pinned: entry.hasOwnProperty('pinned_to') ? true : false,
+    reactions: entry.hasOwnProperty('reactions')
+      ? entry.reactions.map(reaction => reaction.name)
+      : '',
+    starred:
+      entry.hasOwnProperty('is_starred') && entry.is_starred ? true : false,
+    title:
+      (entry.text.match(re_title) && entry.text.match(re_title)[1]) ||
+      (file && file.title) ||
+      '無題',
+    ts: entry.ts,
+    upload: entry.hasOwnProperty('upload') && entry.upload ? true : false
+  }
 }
 
 /**
@@ -99,15 +121,21 @@ async function getUsers() {
   const list = res.members.filter(user => {
     return user.name !== 'slackbot' && !user.is_bot && !user.is_app_user
   })
-  return list.map(user => {
-    return {
-      id: user.id,
-      name: user.profile.display_name,
-      icon: user.profile.image_192.match(/[^/]+$/i),
-      color: user.color,
-      desc: user.profile.title
-    }
-  })
+  return list.map(user => setUserData(user))
+}
+
+/**
+ * set user data
+ * @return { Object } userData
+ */
+function setUserData(user) {
+  return {
+    id: user.id,
+    name: user.profile.display_name,
+    icon: user.profile.image_192.match(/[^/]+$/i),
+    color: user.color,
+    desc: user.profile.title
+  }
 }
 
 /**
@@ -118,15 +146,17 @@ async function fetchAllImages() {
   const files = await web.files.list()
   const users = await web.users.list()
 
-
   const channelList = channels.channels
-    .filter(channel => /blog-/.test(channel.name) || /source-/.test(channel.name))
+    .filter(
+      channel => /blog-/.test(channel.name) || /source-/.test(channel.name)
+    )
     .map(channel => channel.id)
-
 
   // fetch all avatar images
   const data_users = users.members
-    .filter(user => user.name !== 'slackbot' && !user.is_bot && !user.is_app_user)
+    .filter(
+      user => user.name !== 'slackbot' && !user.is_bot && !user.is_app_user
+    )
     .map(user => {
       const url = user.profile.image_192
       saveImageData(url, url.match(/[^/]+$/i)[0])
@@ -135,10 +165,16 @@ async function fetchAllImages() {
   // fetch all images from entries
   const data_entryFiles = files.files
     .filter(image => IS_IMAGE_FILE(image.filetype))
-    .filter(image => new Set([...image.channels, ...channelList]
-      .filter(item => image.channels.includes(item) && channelList.includes(item))).size > 0)
+    .filter(
+      image =>
+        new Set(
+          [...image.channels, ...channelList].filter(
+            item => image.channels.includes(item) && channelList.includes(item)
+          )
+        ).size > 0
+    )
     .map(image => saveImageData(image.url_private, image.name))
-    return await Promise.all([...data_users, ...data_entryFiles])
+  return await Promise.all([...data_users, ...data_entryFiles])
 }
 
 /**
@@ -148,10 +184,8 @@ async function fetchAllImages() {
  * @return { String } result
  */
 async function saveImageData(url, name) {
-
-  // check a file exists
   const path = `${PATH_IMAGE}${name}`
-  const res = await promisify(fs.readFile)(path, '').catch(() => false)
+  const res = await getFileExists(path)
   if (res) {
     return `File is exist: ${path}`
   }
@@ -178,13 +212,19 @@ async function saveImageData(url, name) {
   if (imageData.bitmap.width >= 961) imageData.resize(960, Jimp.AUTO)
   const buff = await imageData.getBufferAsync(Jimp.AUTO)
   const compressedImage = await imagemin.buffer(buff, {
-    plugins: [
-      imageminJpegtran(),
-      imageminPngquant({ quality: '65-80' })
-    ]
-  });
+    plugins: [imageminJpegtran(), imageminPngquant({ quality: '65-80' })]
+  })
   await fs.writeFileSync(path, compressedImage)
   return `Download: ${path}`
+}
+
+/**
+ * check a file exists
+ * @return { Boolean }
+ */
+async function getFileExists(path) {
+  const res = await promisify(fs.readFile)(path, '').catch(() => false)
+  return res ? true : false
 }
 
 /**
@@ -202,7 +242,14 @@ async function fetchAllData() {
 
 module.exports = {
   getChannelsData,
+  setChannelData,
+  setChannelInfo,
+  setChannelEntries,
+  setEntryData,
   getUsers,
+  setUserData,
   fetchAllImages,
+  saveImageData,
+  getFileExists,
   fetchAllData
 }
