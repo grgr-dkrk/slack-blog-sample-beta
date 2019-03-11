@@ -71,13 +71,13 @@ describe('getAPI', () => {
   })
 
   it('image is Exist', async () => {
-    const res = await getAPI.getFileExists('static/uploads/fff.png')
+    const res = await getAPI.getFileExists('@/static/uploads/fff.png')
     expect.assertions(1)
     expect(res).toBe(true)
   })
 
   it('image is not Exist', async () => {
-    const res = await getAPI.getFileExists('static/uploads/fffButDummyFIle.png')
+    const res = await getAPI.getFileExists('@/static/uploads/fffButDummyFIle.png')
     expect.assertions(1)
     expect(res).toBe(false)
   })

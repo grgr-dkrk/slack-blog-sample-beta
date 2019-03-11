@@ -4,8 +4,8 @@ module.exports = {
     '.*\\.(vue)$': 'vue-jest',
   },
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
-    '^@/(.*)$': '<rootDir>/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@@/(.*)$': '<rootDir>/$1',
   },
   moduleFileExtensions: ['js', 'json', 'vue'],
   testEnvironment: 'node',

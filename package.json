@@ -31,6 +31,8 @@
     "ress": "^1.2.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
     "@slack/client": "^4.8.0",
     "@vue/test-utils": "^1.0.0-beta.27",
     "axios": "^0.18.0",
