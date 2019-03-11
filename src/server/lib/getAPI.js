@@ -10,7 +10,7 @@ require('dotenv').config()
 const SLACK_ACCESS_TOKEN = process.env[process.env.API_TOKEN_VARIABLE]
 const web = new WebClient(SLACK_ACCESS_TOKEN)
 
-const PATH_IMAGE = `@/static/uploads/`
+const PATH_IMAGE = `./src/static/uploads/`
 const IS_IMAGE_FILE = fileType =>
   ~['jpg', 'png', 'bmp', 'tiff'].indexOf(fileType)
 
