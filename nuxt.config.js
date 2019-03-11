@@ -1,64 +1,65 @@
 const pkg = require('./package')
-const Jimp = require('jimp')
-const getAPI = require('./server/lib/getAPI.js')
+const getAPI = require('./src/server/lib/getAPI.js')
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 
 module.exports = {
   mode: 'universal',
-
+  srcDir: 'src/',
   /*
-  ** Headers of the page
-  */
+   ** Headers of the page
+   */
   head: {
     title: pkg.name,
     titleTemplate: '%s | ' + pkg.name,
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '「Slack + NuxtでMarkdown対応のブログを作る」のサンプルです。' },
-      { name: 'robots', content: 'noindex' }
+      {
+        hid: 'description',
+        name: 'description',
+        content: '「Slack + NuxtでMarkdown対応のブログを作る」のサンプルです。',
+      },
+      { name: 'robots', content: 'noindex' },
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
 
   /*
-  ** Customize the progress-bar color
-  */
+   ** Customize the progress-bar color
+   */
   loading: { color: '#fff' },
 
   /*
-  ** Global CSS
-  */
+   ** Global CSS
+   */
   css: [
     'ress',
-    { src: '~/node_modules/highlight.js/styles/monokai.css', lang: 'css' }
+    { src: '@@/node_modules/highlight.js/styles/monokai.css', lang: 'css' },
   ],
 
   /*
-  ** Plugins to load before mounting the App
-  */
-  plugins: [
-  ],
+   ** Plugins to load before mounting the App
+   */
+  plugins: [],
 
   /*
-  ** Nuxt.js modules
-  */
+   ** Nuxt.js modules
+   */
   modules: [
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
-    ['nuxt-sass-resources-loader', [
-      '@/assets/css/variable.scss',
-      '@/assets/css/foundation/base.scss'
-    ]],
-    '@nuxtjs/markdownit'
+    '@nuxtjs/markdownit',
+    '@nuxtjs/style-resources',
   ],
 
+  styleResources: {
+    sass: ['@/assets/css/variable.scss', '@/assets/css/foundation/base.scss'],
+  },
+
   manifest: {
-    name: "SLACK-BLOG",
-    lang: 'ja'
+    name: 'SLACK-BLOG',
+    lang: 'ja',
   },
 
   markdownit: {
@@ -66,22 +67,19 @@ module.exports = {
     breaks: true,
     html: true,
     linkify: true,
-    use: [
-      'markdown-it-emoji',
-      'markdown-it-highlightjs'
-    ]
+    use: ['markdown-it-emoji', 'markdown-it-highlightjs'],
   },
 
   /*
-  ** Axios module configuration
-  */
+   ** Axios module configuration
+   */
   axios: {
-    baseURL: `http://${host}:${port}/api/`
+    baseURL: `http://${host}:${port}/api/`,
   },
 
   /*
-  ** Generate configuration
-  */
+   ** Generate configuration
+   */
   generate: {
     routes() {
       async function setRoutes() {
@@ -92,16 +90,16 @@ module.exports = {
             route: `/categories/${channel.id}`,
             payload: {
               channel: res.channels,
-              users: res.users
-            }
+              users: res.users,
+            },
           })
           channel.entries.forEach(entry => {
             arr.push({
               route: `/categories/${entry.channel}/entry-${entry.ts}`,
               payload: {
                 channel: res.channels,
-                users: res.users
-              }
+                users: res.users,
+              },
             })
           })
         })
@@ -110,16 +108,16 @@ module.exports = {
       return setRoutes().then(data => {
         return data
       })
-    }
+    },
   },
 
   /*
-  ** Build configuration
-  */
+   ** Build configuration
+   */
   build: {
     /*
-    ** You can extend webpack config here
-    */
+     ** You can extend webpack config here
+     */
     extend(config, ctx) {
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
@@ -127,10 +125,9 @@ module.exports = {
           enforce: 'pre',
           test: /\.(js|vue)$/,
           loader: 'eslint-loader',
-          exclude: /(node_modules)/
+          exclude: /(node_modules)/,
         })
       }
-    }
+    },
   },
-
 }

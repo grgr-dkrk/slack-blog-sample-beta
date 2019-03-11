@@ -81,9 +81,11 @@ dist
 .idea
 
 # media files
-static/uploads/*
-!static/uploads/.gitkeep
+src/static/uploads/*
+!src/static/uploads/.gitkeep
 
 .firebase-debug.log
 .firebase/
 sw.*
+
+.vscode/

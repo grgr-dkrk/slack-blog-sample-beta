@@ -1,17 +1,14 @@
 <template>
   <div class="container">
-    <sidebar
-      :class="{'is-active': isSpOpen}"
-      class="sidebar"
-    />
+    <sidebar :class="{ 'is-active': isSpOpen }" class="sidebar" />
     <div class="articleList">
       <article-list />
     </div>
     <button
-      :class="{'is-active': isSpOpen}"
-      aria-label="drawerひらく"
+      :class="{ 'is-active': isSpOpen }"
+      aria-label="drawer㝲ら㝝"
       class="openDrawer"
-      @click="() => isSpOpen = isSpOpen ? false : true"
+      @click="() => (isSpOpen = isSpOpen ? false : true)"
     >
       <span role="presentation" />
       <span role="presentation" />
@@ -44,7 +41,7 @@
       display: block;
       height: 4px;
       width: 100%;
-      transition: all .3s ease-in;
+      transition: all 0.3s ease-in;
       position: absolute;
       &:first-child {
         top: 0;
@@ -60,7 +57,7 @@
         bottom: 0;
       }
     }
-    &.is-active span{
+    &.is-active span {
       &:first-child {
         transform: rotate(-45deg);
         top: 10px;
@@ -86,7 +83,7 @@
     height: 100%;
     width: 280px;
     left: -100%;
-    transition: left .3s ease-in;
+    transition: left 0.3s ease-in;
     z-index: 100;
     &.is-active {
       left: 0;
@@ -106,18 +103,18 @@
 </style>
 
 <script>
-import Sidebar from '~/components/sidebar'
-import ArticleList from '~/components/articles/'
+import Sidebar from '@/components/sidebar'
+import ArticleList from '@/components/articles/'
 
 export default {
   components: {
-    'sidebar': Sidebar,
-    'article-list': ArticleList
+    sidebar: Sidebar,
+    'article-list': ArticleList,
   },
   data() {
     return {
-      isSpOpen: false
+      isSpOpen: false,
     }
-  }
+  },
 }
 </script>

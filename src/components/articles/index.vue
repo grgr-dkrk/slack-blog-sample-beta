@@ -7,7 +7,7 @@
       :data="entry"
       :class="{
         'is-pinned': entry.pinned,
-        'is-starred': entry.starred
+        'is-starred': entry.starred,
       }"
       class="entry"
     />
@@ -29,7 +29,7 @@ main {
   margin-bottom: 60px;
   order: 2;
   &.is-pinned {
-    order: 1
+    order: 1;
   }
 }
 .categoryInfo {
@@ -38,14 +38,13 @@ main {
 }
 </style>
 
-
 <script>
-import categoryInfo from '~/components/articles/categoryInfo'
-import entry from '~/components/articles/entry/'
+import categoryInfo from '@/components/articles/categoryInfo'
+import entry from '@/components/articles/entry/'
 export default {
   components: {
     'category-info': categoryInfo,
-    entry
+    entry,
   },
   computed: {
     entries() {
@@ -55,15 +54,16 @@ export default {
       }
       // page entry
       if (/^entry-/.test(this.$store.getters['slack/page'])) {
-        return this.$store.getters['slack/entries'].filter(entry => (
-          entry.ts === this.$store.getters['slack/page'].replace('entry-', '')
-        ))
+        return this.$store.getters['slack/entries'].filter(
+          entry =>
+            entry.ts === this.$store.getters['slack/page'].replace('entry-', '')
+        )
       }
       // page category
-      return this.$store.getters['slack/channels'].filter(channel => (
-        channel.id === this.$store.getters['slack/page']
-      ))[0].entries
-    }
-  }
+      return this.$store.getters['slack/channels'].filter(
+        channel => channel.id === this.$store.getters['slack/page']
+      )[0].entries
+    },
+  },
 }
 </script>

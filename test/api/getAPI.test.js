@@ -1,4 +1,4 @@
-import getAPI from '~/server/lib/getAPI.js'
+import getAPI from '@/server/lib/getAPI.js'
 import mockData from './mock.json'
 const { WebClient } = require('@slack/client')
 require('dotenv').config()
@@ -20,22 +20,22 @@ describe('getAPI', () => {
     slackMock().web.addResponse({
       url: 'https://slack.com/api/conversations.list',
       status: 200,
-      body: mockData.conversationsList
+      body: mockData.conversationsList,
     })
     slackMock().web.addResponse({
       url: 'https://slack.com/api/conversations.history',
       status: 200,
-      body: mockData.conversationsHistory
+      body: mockData.conversationsHistory,
     })
     slackMock().web.addResponse({
       url: 'https://slack.com/api/users.list',
       status: 200,
-      body: mockData.usersList
+      body: mockData.usersList,
     })
     slackMock().web.addResponse({
       url: 'https://slack.com/api/files.list',
       status: 200,
-      body: mockData.filesList
+      body: mockData.filesList,
     })
   })
 
@@ -62,7 +62,10 @@ describe('getAPI', () => {
   })
 
   it('SaveImage', async () => {
-    const res = await getAPI.saveImageData('https://via.placeholder.com/10/fff.png', 'fff.png')
+    const res = await getAPI.saveImageData(
+      'https://via.placeholder.com/10/fff.png',
+      'fff.png'
+    )
     expect.assertions(1)
     expect(res).toBeTruthy()
   })
@@ -102,5 +105,4 @@ describe('getAPI', () => {
     expect(res.channels.length).toBeGreaterThanOrEqual(1)
     expect(res.users.length).toBeGreaterThanOrEqual(1)
   })
-
 })

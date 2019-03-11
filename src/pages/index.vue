@@ -1,19 +1,21 @@
 <template>
-  <main-template v-if="$store.getters['slack/channels'] && $store.getters['slack/users']" />
+  <main-template
+    v-if="$store.getters['slack/channels'] && $store.getters['slack/users']"
+  />
 </template>
 
 <script>
-import MainTemplate from '~/components/template/mainTemplate'
+import MainTemplate from '@/components/template/mainTemplate'
 export default {
   head() {
     return {
-      title: 'top'
+      title: 'top',
     }
   },
   components: {
-    'main-template': MainTemplate
+    'main-template': MainTemplate,
   },
-  async asyncData({ app, store, payload }) {
+  async asyncData({ store, payload }) {
     if (payload) {
       store.commit('slack/setChannels', payload.channel)
       store.commit('slack/setUsers', payload.users)
@@ -24,6 +26,6 @@ export default {
       return
     }
     await store.dispatch('slack/fetchData')
-  }
+  },
 }
 </script>

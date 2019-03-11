@@ -13,7 +13,7 @@ export const mutations = {
   },
   setUsers(state, users) {
     state.users = users
-  }
+  },
 }
 
 export const getters = {
@@ -21,25 +21,26 @@ export const getters = {
   channelInfo: (state, getters) => {
     return getters.channels.filter(channel => {
       return channel.id === getters.page
-     }
-    )[0]
+    })[0]
   },
   channels: state => state.channels,
   entries: (state, getters) => {
     const arr = []
-    getters.channels.map(channel => channel.entries).forEach(channel => {
-      channel.forEach(items => arr.push(items))
-    })
-    return arr.sort((a, b) => a.ts < b.ts ? 1 : -1)
+    getters.channels
+      .map(channel => channel.entries)
+      .forEach(channel => {
+        channel.forEach(items => arr.push(items))
+      })
+    return arr.sort((a, b) => (a.ts < b.ts ? 1 : -1))
   },
   users: state => state.users,
 }
 
 export const actions = {
-  async fetchData({ commit, getters }, id) {
+  async fetchData({ commit }, id) {
     const res = await this.$axios.get(`fetchAllData/`)
     commit('setChannels', res.data.channels)
     commit('setUsers', res.data.users)
     commit('setPage', id || 'all')
-  }
+  },
 }

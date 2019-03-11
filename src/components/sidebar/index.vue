@@ -1,7 +1,9 @@
 <template>
   <aside>
     <h1>
-      <nuxt-link to="/">Slack-Blog</nuxt-link>
+      <nuxt-link to="/">
+        Slack-Blog
+      </nuxt-link>
     </h1>
     <profile class="profile" />
     <link-list
@@ -27,7 +29,7 @@ aside {
   h1 {
     margin-bottom: 20px;
   }
-  h1 a{
+  h1 a {
     color: #fff;
     text-decoration: none;
   }
@@ -44,20 +46,20 @@ aside {
 </style>
 
 <script>
-import profile from '~/components/sidebar/profile/'
-import linkList from '~/components/sidebar/linkList/'
+import profile from '@/components/sidebar/profile/'
+import linkList from '@/components/sidebar/linkList/'
 
 export default {
   components: {
     profile,
-    'link-list': linkList
+    'link-list': linkList,
   },
   computed: {
     channels() {
       return this.$store.getters['slack/channels'].map(channel => ({
         baseURL: '/categories/',
         id: channel.id,
-        name: `# ${channel.name}`
+        name: `# ${channel.name}`,
       }))
     },
     entries() {
@@ -65,10 +67,10 @@ export default {
         return {
           baseURL: `/categories/${entry.channel}/`,
           id: `entry-${entry.ts}`,
-          name: entry.title
+          name: entry.title,
         }
       })
-    }
-  }
+    },
+  },
 }
 </script>

@@ -2,28 +2,27 @@
   <article v-if="!(page === 'all' && data.pinned)">
     <header>
       <h1 v-if="title">
-        <nuxt-link :to="`/categories/${data.channel}/entry-${data.ts}`">{{ title }} <span v-if="data.pinned">{{ emoji('pushpin') }}</span></nuxt-link>
+        <nuxt-link :to="`/categories/${data.channel}/entry-${data.ts}`">
+          {{ title }}
+          <span v-if="data.pinned">{{ emoji('pushpin') }}</span>
+        </nuxt-link>
       </h1>
       <time>投稿: {{ time }}</time>
       <time v-if="edited">更新: {{ edited }}</time>
     </header>
     <figure v-if="src">
-      <img
-        :src="src"
-        alt=""
-      >
+      <img :src="src" alt="" />
     </figure>
-    <div
-      class="md-content"
-      v-html="$md.render(content)"
-    />
+    <div class="md-content" v-html="$md.render(content)" />
     <footer>
       <p>author: {{ $store.getters['slack/users'][0].name }}</p>
-      <p>category: <nuxt-link :to="`/categories/${data.channel}`">#{{ data.channelName }}</nuxt-link> </p>
-      <ul
-        v-if="data.reactions"
-        class="reactions"
-      >
+      <p>
+        category:
+        <nuxt-link :to="`/categories/${data.channel}`">
+          #{{ data.channelName }}
+        </nuxt-link>
+      </p>
+      <ul v-if="data.reactions" class="reactions">
         <li
           v-for="(reaction, index) in data.reactions"
           :key="index"
@@ -67,9 +66,9 @@ header {
     border-radius: 4px;
     padding: 4px;
     font-size: 21px;
-    letter-spacing: -.1em;
+    letter-spacing: -0.1em;
     line-height: 1;
-    &:nth-child(n+2) {
+    &:nth-child(n + 2) {
       margin-left: 5px;
     }
   }
@@ -93,9 +92,10 @@ footer {
   > * {
     margin-bottom: 10px;
   }
-  h1, h2 {
+  h1,
+  h2 {
     margin-top: 40px;
-    padding-left: .6em;
+    padding-left: 0.6em;
     position: relative;
     font-size: 23px;
     margin-bottom: 14px;
@@ -106,14 +106,14 @@ footer {
       margin-top: 0;
     }
     &:after {
-      background-color: #D90F5D;
+      background-color: #d90f5d;
       content: '';
       display: block;
       left: 0;
       height: 100%;
       position: absolute;
       width: 6px;
-      top:0;
+      top: 0;
     }
   }
   h3 {
@@ -129,7 +129,9 @@ footer {
       color: #0576b9;
     }
   }
-  p,li,a {
+  p,
+  li,
+  a {
     font-size: 18px;
     @include media_query($md) {
       font-size: 16px;
@@ -151,7 +153,8 @@ footer {
     * {
       border: 1px solid #ccc;
     }
-    th,td {
+    th,
+    td {
       padding: 20px;
     }
     th {
@@ -176,7 +179,7 @@ footer {
       padding-left: 1em;
       &:before {
         margin-left: -1em;
-        content: counter(section)'. ';
+        content: counter(section) '. ';
         counter-increment: section;
         font-weight: bold;
       }
@@ -189,15 +192,13 @@ footer {
 import dayjs from 'dayjs'
 import emojis from 'emojis'
 
-const re_img = /^# (.+)\n/
-
 export default {
   transitions: 'appear',
   props: {
     data: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   computed: {
     page() {
@@ -217,18 +218,15 @@ export default {
       return dayjs.unix(this.data.edited).format('YYYY/MM/DD (ddd) HH:mm')
     },
     src() {
-      try {
-        if (this.data.file && this.data.upload) return `/uploads/${this.data.file.url.match( /[^/]+$/i )}`
-      }
-      catch {
-        return false
-      }
+      if (this.data.file && this.data.upload)
+        return `/uploads/${this.data.file.url.match(/[^/]+$/i)}`
+      return false
     },
   },
   methods: {
     emoji(emoji) {
       return emojis.unicode(emoji)
-    }
-  }
+    },
+  },
 }
 </script>

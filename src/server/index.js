@@ -1,4 +1,3 @@
-
 const express = require('express')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
@@ -11,7 +10,7 @@ const getAPI = require('./lib/getAPI.js')
 app.set('port', port)
 
 // Import and Set Nuxt.js options
-let config = require('../nuxt.config.js')
+let config = require('../../nuxt.config.js')
 config.dev = !(process.env.NODE_ENV === 'production')
 
 async function start() {
@@ -31,33 +30,40 @@ async function start() {
   app.listen(port, host)
   consola.ready({
     message: `Server listening on http://${host}:${port}`,
-    badge: true
+    badge: true,
   })
 }
 start()
 
 app.get('/api/getChannelsData/', (req, res) => {
-  getAPI.getChannelsData().then(list => {
-    res.send(list)
-  }).catch(err => {
-    res.sendStatus(400)
-  })
+  getAPI
+    .getChannelsData()
+    .then(list => {
+      res.send(list)
+    })
+    .catch(err => {
+      res.sendStatus(400)
+    })
 })
 
 app.get('/api/getUsers/', (req, res) => {
-  getAPI.getUsers().then(list => {
-    res.send(list)
-  }).catch(err => {
-    res.sendStatus(400)
-  })
+  getAPI
+    .getUsers()
+    .then(list => {
+      res.send(list)
+    })
+    .catch(err => {
+      res.sendStatus(400)
+    })
 })
 
-
-
 app.get('/api/fetchAllData', (req, res) => {
-  getAPI.fetchAllData().then(data => {
-    res.send(data)
-  }).catch(err => {
-    res.sendStatus(400)
-  })
+  getAPI
+    .fetchAllData()
+    .then(data => {
+      res.send(data)
+    })
+    .catch(err => {
+      res.sendStatus(400)
+    })
 })

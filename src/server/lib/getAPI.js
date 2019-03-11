@@ -10,7 +10,7 @@ require('dotenv').config()
 const SLACK_ACCESS_TOKEN = process.env[process.env.API_TOKEN_VARIABLE]
 const web = new WebClient(SLACK_ACCESS_TOKEN)
 
-const PATH_IMAGE = `static/uploads/`
+const PATH_IMAGE = `@/static/uploads/`
 const IS_IMAGE_FILE = fileType =>
   ~['jpg', 'png', 'bmp', 'tiff'].indexOf(fileType)
 
@@ -19,13 +19,12 @@ const IS_IMAGE_FILE = fileType =>
  */
 async function getChannelsData() {
   const res = await web.conversations.list()
-  const data = res.channels
-    .reduce((list, channel) => {
-      if (/blog-/.test(channel.name)) {
-        list.push(setChannelData(channel))
-      }
-      return list
-    }, [])
+  const data = res.channels.reduce((list, channel) => {
+    if (/blog-/.test(channel.name)) {
+      list.push(setChannelData(channel))
+    }
+    return list
+  }, [])
   return await Promise.all(data)
 }
 
@@ -35,7 +34,7 @@ async function getChannelsData() {
  */
 async function setChannelData(channel) {
   const entries = await web.conversations.history({
-    channel: channel.id
+    channel: channel.id,
   })
   const channelData = setChannelInfo(channel)
   channelData.entries = setChannelEntries(
@@ -55,7 +54,7 @@ function setChannelInfo(channel) {
     id: channel.id,
     name: channel.name,
     purpose: channel.purpose.value,
-    topic: channel.topic.value
+    topic: channel.topic.value,
   }
 }
 
@@ -88,7 +87,7 @@ function setEntryData(entry, channelId, channelName) {
       id: entry.files[0].id,
       type: entry.files[0].filetype,
       title: entry.files[0].title,
-      url: entry.files[0].url_private_download
+      url: entry.files[0].url_private_download,
     }
   }
   return {
@@ -114,7 +113,7 @@ function setEntryData(entry, channelId, channelName) {
       (file && file.title) ||
       '無題',
     ts: entry.ts,
-    upload: entry.hasOwnProperty('upload') && entry.upload ? true : false
+    upload: entry.hasOwnProperty('upload') && entry.upload ? true : false,
   }
 }
 
@@ -142,7 +141,7 @@ function setUserData(user) {
     name: user.profile.display_name,
     icon: user.profile.image_192.match(/[^/]+$/i),
     color: user.color,
-    desc: user.profile.title
+    desc: user.profile.title,
   }
 }
 
@@ -154,23 +153,21 @@ async function fetchAllImages() {
   const files = await web.files.list()
   const users = await web.users.list()
 
-  const channelList = channels.channels
-    .reduce((list, channel) => {
-      if (/blog-/.test(channel.name) || /source-/.test(channel.name)) {
-        list.push(channel.id)
-      }
-      return list
-    }, [])
+  const channelList = channels.channels.reduce((list, channel) => {
+    if (/blog-/.test(channel.name) || /source-/.test(channel.name)) {
+      list.push(channel.id)
+    }
+    return list
+  }, [])
 
-  const data_users = users.members
-    .reduce((list, user) => {
-      if (user.name !== 'slackbot' && !user.is_bot && !user.is_app_user) {
-        list.push(user)
-        const url = user.profile.image_192
-        saveImageData(url, url.match(/[^/]+$/i)[0])
-      }
-      return list
-    }, [])
+  const data_users = users.members.reduce((list, user) => {
+    if (user.name !== 'slackbot' && !user.is_bot && !user.is_app_user) {
+      list.push(user)
+      const url = user.profile.image_192
+      saveImageData(url, url.match(/[^/]+$/i)[0])
+    }
+    return list
+  }, [])
 
   // fetch all images from entries
   const data_entryFiles = files.files
@@ -206,8 +203,8 @@ async function saveImageData(url, name) {
   const imageData = await Jimp.read({
     url: url,
     headers: {
-      Authorization: `Bearer ${SLACK_ACCESS_TOKEN}`
-    }
+      Authorization: `Bearer ${SLACK_ACCESS_TOKEN}`,
+    },
   }).catch(err => {
     console.log(`error: ${url}`)
     console.log(err)
@@ -222,7 +219,7 @@ async function saveImageData(url, name) {
   if (imageData.bitmap.width >= 961) imageData.resize(960, Jimp.AUTO)
   const buff = await imageData.getBufferAsync(Jimp.AUTO)
   const compressedImage = await imagemin.buffer(buff, {
-    plugins: [imageminJpegtran(), imageminPngquant({ quality: '65-80' })]
+    plugins: [imageminJpegtran(), imageminPngquant({ quality: '65-80' })],
   })
   await fs.writeFileSync(path, compressedImage)
   return `Download: ${path}`
@@ -246,7 +243,7 @@ async function fetchAllData() {
   const users = await getUsers()
   return {
     channels: channels,
-    users: users
+    users: users,
   }
 }
 
@@ -261,5 +258,5 @@ module.exports = {
   fetchAllImages,
   saveImageData,
   getFileExists,
-  fetchAllData
+  fetchAllData,
 }

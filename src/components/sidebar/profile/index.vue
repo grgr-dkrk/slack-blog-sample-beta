@@ -2,10 +2,7 @@
   <div class="wrap">
     <h2>{{ user.name }}</h2>
     <figure>
-      <img
-        :src="srcPath"
-        alt=""
-      >
+      <img :src="srcPath" alt="" />
     </figure>
     <p v-if="user.desc">
       {{ user.desc }}
@@ -28,7 +25,7 @@ figure {
 h2 {
   order: 1;
   font-size: 18px;
-  padding-bottom: .4em;
+  padding-bottom: 0.4em;
 }
 p {
   order: 2;
@@ -42,14 +39,15 @@ export default {
     user() {
       return this.$store.getters['slack/users'][0]
     },
-    srcPath(){
+    srcPath() {
       try {
-        return require(`~/static/uploads/${this.$store.getters['slack/users'][0].icon}`)
+        return require(`@/static/uploads/${
+          this.$store.getters['slack/users'][0].icon
+        }`)
+      } catch {
+        return require('@/static/no_icon.jpg')
       }
-      catch {
-        return require('~/static/no_icon.jpg')
-      }
-    }
-  }
+    },
+  },
 }
 </script>
