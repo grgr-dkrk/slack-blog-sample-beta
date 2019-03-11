@@ -10,8 +10,7 @@ const getAPI = require('./lib/getAPI.js')
 if (process.argv.length && process.argv[2] === '--generate') {
   getAPI
     .fetchAllImages()
-    .then(data => {
-      console.log(data)
+    .then(() => {
       console.log('done')
       process.exit(0)
     })
