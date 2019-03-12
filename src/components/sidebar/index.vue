@@ -1,44 +1,44 @@
 <template>
-  <aside>
-    <h1>
+  <aside class="c-sidebar">
+    <h1 class="c-sidebar__title">
       <nuxt-link to="/">
         Slack-Blog
       </nuxt-link>
     </h1>
-    <profile class="profile" />
-    <link-list
-      :items="channels"
+    <Profile class="c-sidebar-profile" />
+    <LinkList
+      :items="filteredChannels"
       :first-link="['/', '# All']"
       title="カテゴリー"
-      class="linkList"
+      class="c-sidebar-linkList"
     />
-    <link-list
-      :items="entries"
+    <LinkList
+      :items="filteredEntries"
       :first-link="[]"
       title="最新記事"
-      class="linkList"
+      class="c-sidebar-linkList"
     />
   </aside>
 </template>
 
 <style lang="scss" scoped>
-aside {
+.c-sidebar {
   background-color: $mainColor;
   color: #fff;
   padding: 20px;
-  h1 {
+  &__title {
+    margin-bottom: 20px;
+    a {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+  &-profile {
     margin-bottom: 20px;
   }
-  h1 a {
-    color: #fff;
-    text-decoration: none;
-  }
-  .profile {
-    margin-bottom: 20px;
-  }
-  .linkList {
+  &-linkList {
     padding-bottom: 20px;
-    &:last-child {
+    &:last-of-type {
       padding-bottom: 0;
     }
   }
@@ -46,24 +46,34 @@ aside {
 </style>
 
 <script>
-import profile from '@/components/sidebar/profile/'
-import linkList from '@/components/sidebar/linkList/'
+import Profile from '@/components/sidebar/profile/'
+import LinkList from '@/components/sidebar/linkList/'
 
 export default {
   components: {
-    profile,
-    'link-list': linkList,
+    Profile,
+    LinkList,
+  },
+  props: {
+    channels: {
+      type: Array,
+      required: true,
+    },
+    entries: {
+      type: Array,
+      required: true,
+    },
   },
   computed: {
-    channels() {
-      return this.$store.getters['slack/channels'].map(channel => ({
+    filteredChannels() {
+      return channels.map(channel => ({
         baseURL: '/categories/',
         id: channel.id,
         name: `# ${channel.name}`,
       }))
     },
     entries() {
-      return this.$store.getters['slack/entries'].slice(0, 3).map(entry => {
+      return entries.slice(0, 3).map(entry => {
         return {
           baseURL: `/categories/${entry.channel}/`,
           id: `entry-${entry.ts}`,

@@ -1,11 +1,11 @@
 <template>
-  <main-template
+  <MainTemplate
     v-if="$store.getters['slack/channels'] && $store.getters['slack/users']"
   />
 </template>
 
 <script>
-import MainTemplate from '@/components/template/mainTemplate'
+import MainTemplate from '@/containers/mainTemplate'
 export default {
   head() {
     return {
@@ -13,7 +13,7 @@ export default {
     }
   },
   components: {
-    'main-template': MainTemplate,
+    MainTemplate,
   },
   async asyncData({ store, payload }) {
     if (payload) {

@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <sidebar :class="{ 'is-active': isSpOpen }" class="sidebar" />
+    <Sidebar :class="{ 'is-active': isDrawerOpen }" class="sidebar" />
     <div class="articleList">
-      <article-list />
+      <Entries />
     </div>
     <button
-      :class="{ 'is-active': isSpOpen }"
-      aria-label="drawer㝲ら㝝"
+      :class="{ 'is-active': isDrawerOpen }"
+      aria-label="drawer"
       class="openDrawer"
-      @click="() => (isSpOpen = isSpOpen ? false : true)"
+      @click="toggleIsDrawerOpen()"
     >
       <span role="presentation" />
       <span role="presentation" />
@@ -104,17 +104,23 @@
 
 <script>
 import Sidebar from '@/components/sidebar'
-import ArticleList from '@/components/articles/'
+import Entries from '@/components/entries/'
+import { mapState } from 'vuex'
 
 export default {
   components: {
-    sidebar: Sidebar,
-    'article-list': ArticleList,
+    Sidebar,
+    Entries,
   },
   data() {
     return {
-      isSpOpen: false,
+      isDrawerOpen: false,
     }
+  },
+  methods: {
+    toggleIsDrawerOpen() {
+      this.isDrawerOpen = this.isDrawerOpen ? false : true
+    },
   },
 }
 </script>

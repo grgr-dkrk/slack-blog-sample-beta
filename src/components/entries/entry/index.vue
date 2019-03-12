@@ -11,7 +11,7 @@
       <time v-if="edited">更新: {{ edited }}</time>
     </header>
     <figure v-if="src">
-      <img :src="src" alt="" />
+      <img :src="src" alt="" >
     </figure>
     <div class="md-content" v-html="$md.render(content)" />
     <footer>
