@@ -23,7 +23,7 @@
     "dayjs": "^1.7.7",
     "dotenv": "^6.2.0",
     "emojis": "^1.0.10",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "jimp": "^0.6.0",
     "markdown-it-emoji": "^1.4.0",
     "markdown-it-highlightjs": "^3.0.0",
